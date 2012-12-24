@@ -69,7 +69,8 @@ possHoods = [(a, b, c) | a <- cs, b <- cs, c <- cs]
     where cs = [Off, On]
 
 main = do
-    (ruleNum:width:startRow:_) <- getArgs
+    (ruleNum:widthStr:startRow:_) <- getArgs
     let rs = toRuleset $ read ruleNum
-    let initRow = approxRow (read width `div` 2) $ strToRow startRow
-    mapM_ (putStrLn . rowToStr . toLeftEnd) $ iterate (stepRow rs) initRow
+    let w = (read widthStr `div` 2)
+    let initRow = strToRow startRow
+    mapM_ (putStrLn . rowToStr . toLeftEnd . approxRow w) $ iterate (stepRow rs) initRow
