@@ -49,7 +49,7 @@ strToRow s = let (c:cs) = strToCells s in Row [] c cs
 rowToStr :: Row -> String
 rowToStr = scanRow f
     where f (Row _ On _) = 'X'
-          f (Row _ Off _) = '_'
+          f (Row _ Off _) = ' '
 
 minStrToRow :: String -> Integer -> Row
 minStrToRow s w = Row (xs ++ offs) c (ys ++ offs)
