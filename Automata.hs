@@ -16,9 +16,16 @@ right :: Row -> Maybe Row
 right (Row _ _ []) = Nothing
 right (Row xs c (y:ys)) = Just $ Row (c:xs) y ys
 
-scanRow :: (Row -> a) -> Row -> [a]
-scanRow f r@(Row _ c []) = [f r]
-scanRow f r = f r : scanRow f (fromJust . right $ r)
+scanRowR :: (Row -> a) -> Row -> [a]
+scanRowR f r@(Row _ _ []) = [f r]
+scanRowR f r = f r : scanRowR f (fromJust . right $ r)
+
+scanRowL :: (Row -> a) -> Row -> [a]
+scanRowL f r@(Row [] _ _) = [f r]
+scanRowL f r = f r : scanRowL f (fromJust . left $ r)
+
+scanBi :: (Row -> Cell) -> Row -> Row
+scanBi f r = Row (scanRowL f . fromJust $ left r) (f r) (scanRowR f . fromJust $ right r)
 
 hood :: Row -> Neighborhood
 hood (Row [] c (y:_)) = (Off, c, y)
@@ -29,7 +36,10 @@ stepHood :: Ruleset -> Neighborhood -> Cell
 stepHood rs t = fromJust $ lookup t rs
 
 stepRow :: Ruleset -> Row -> Row
-stepRow rs r = let (c:cs) = scanRow (stepHood rs . hood) r in Row [] c cs
+stepRow rs = scanBi (stepHood rs . hood)
+
+approxRow :: Int -> Row -> Row
+approxRow n (Row xs c ys) = Row (take n xs) c (take n ys)
 
 asBitlist :: Integer -> [Integer]
 asBitlist n = let (q, r) = n `divMod` 2 in if q == 0 then [r] else r : asBitlist q
@@ -40,22 +50,16 @@ toRuleset n = zip possHoods vals
           toCell 1 = On
           vals = (map toCell . asBitlist $ n) ++ repeat Off
 
-strToCells :: String -> [Cell]
-strToCells = map (\c -> if c == 'X' then On else Off)
-
-strToRow :: String -> Row
-strToRow s = let (c:cs) = strToCells s in Row [] c cs
-
 rowToStr :: Row -> String
-rowToStr = scanRow f
+rowToStr = scanRowR f
     where f (Row _ On _) = 'X'
           f (Row _ Off _) = ' '
 
-minStrToRow :: String -> Integer -> Row
-minStrToRow s w = Row (xs ++ offs) c (ys ++ offs)
-    where (xs, (c:ys)) = splitAt (length r `div` 2) r
-          offs = replicate (fromIntegral $ w `div` 2) Off
-          r = strToCells s
+strToRow :: String -> Row
+strToRow s = Row (xs ++ offs) c (ys ++ offs)
+    where (xs, c:ys) = splitAt (length r `div` 2) r
+          offs = repeat Off
+          r = map (\c -> if c == 'X' then On else Off) s
 
 toLeftEnd :: Row -> Row
 toLeftEnd r = maybe r toLeftEnd $ left r
@@ -67,5 +71,5 @@ possHoods = [(a, b, c) | a <- cs, b <- cs, c <- cs]
 main = do
     (ruleNum:width:startRow:_) <- getArgs
     let rs = toRuleset $ read ruleNum
-    let initRow = toLeftEnd . minStrToRow startRow $ read width
-    mapM_ (putStrLn . rowToStr) $ iterate (stepRow rs) initRow
+    let initRow = approxRow (read width `div` 2) $ strToRow startRow
+    mapM_ (putStrLn . rowToStr . toLeftEnd) $ iterate (stepRow rs) initRow
