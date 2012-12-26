@@ -52,7 +52,7 @@ toRuleset n = zip possHoods vals
 
 rowToStr :: Row -> String
 rowToStr = scanRowR f
-    where f (Row _ On _) = '\9608'
+    where f (Row _ On _) = 'X'
           f (Row _ Off _) = ' '
 
 strToRow :: String -> Row
