@@ -1,5 +1,8 @@
 1D Cellular Automata
 ================
+This uses infinite lists to represent the state of the automaton and
+to ensure that the state is not incorrectly truncated until it is printed.
+
 
 usage:
 
@@ -7,26 +10,37 @@ usage:
 
 example:
 
-    $ ./Automata 90 40 X | head -n 20
+    $ ./Automata 90 20 X | head -n 32
 
-    ____________________X____________________
-    ___________________X_X___________________
-    __________________X___X__________________
-    _________________X_X_X_X_________________
-    ________________X_______X________________
-    _______________X_X_____X_X_______________
-    ______________X___X___X___X______________
-    _____________X_X_X_X_X_X_X_X_____________
-    ____________X_______________X____________
-    ___________X_X_____________X_X___________
-    __________X___X___________X___X__________
-    _________X_X_X_X_________X_X_X_X_________
-    ________X_______X_______X_______X________
-    _______X_X_____X_X_____X_X_____X_X_______
-    ______X___X___X___X___X___X___X___X______
-    _____X_X_X_X_X_X_X_X_X_X_X_X_X_X_X_X_____
-    ____X_______________________________X____
-    ___X_X_____________________________X_X___
-    __X___X___________________________X___X__
-    _X_X_X_X_________________________X_X_X_X_
-  
+              X          
+             X X         
+            X   X        
+           X X X X       
+          X       X      
+         X X     X X     
+        X   X   X   X    
+       X X X X X X X X   
+      X               X  
+     X X             X X 
+    X   X           X   X
+     X X X         X X X 
+          X       X      
+         X X     X X     
+    X   X   X   X   X   X
+     X X X X X X X X X X 
+                         
+                         
+                         
+                         
+                         
+                         
+    X                   X
+     X                 X 
+      X               X  
+     X X             X X 
+    X   X           X   X
+     X X X         X X X 
+          X       X      
+         X X     X X     
+    X   X   X   X   X   X
+     X X X X X X X X X X 
